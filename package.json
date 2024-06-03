@@ -1,0 +1,29 @@
+{
+  "name": "bot",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_OPTIONS='--loader ts-node/esm' pnpm nodemon src/index.ts",
+    "build": "pnpm tsc --build",
+    "start": "pnpm node dist/index.js"
+  },
+  "dependencies": {
+    "@pieces.app/pieces-os-client": "^3.0.2",
+    "@t3-oss/env-core": "^0.6.0",
+    "debug": "^4.3.4",
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.0.3",
+    "octokit": "^4.0.2",
+    "papaparse": "^5.4.1",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/node": "^18.15.3",
+    "eslint": "^8.36.0",
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  }
+}
