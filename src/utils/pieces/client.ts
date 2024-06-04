@@ -92,21 +92,21 @@ export const createConversation = async (
         },
       });
 
-    // Add the system message to the conversation
-    const systemMessage =
-      await conversationMessagesApi.messagesCreateSpecificMessage({
-        seededConversationMessage: {
-          conversation: {
-            id: newConversation.id,
-          },
-          role: QGPTConversationMessageRoleEnum.System,
-          fragment: {
-            string: {
-              raw: 'You are an expert support worker who prides themselves on helping users resolve any problems they are having with Pieces in general, Pieces integrations on general support on issues related to Pieces. You will always answer in an accurate, polite and helpful manner. Remember that being a good support is essential for the success of the company. You will get a users query and some information from our support tickets, documentation site, and faqs. Use the information to provide support for the user. If there is no information related to their query, politely direct them to make a GitHub issue on our support repo here: https://github.com/pieces-app/support/issues/new/choose',
-            },
-          },
-        },
-      });
+    // // Add the system message to the conversation
+    // const systemMessage =
+    //   await conversationMessagesApi.messagesCreateSpecificMessage({
+    //     seededConversationMessage: {
+    //       conversation: {
+    //         id: newConversation.id,
+    //       },
+    //       role: QGPTConversationMessageRoleEnum.System,
+    //       fragment: {
+    //         string: {
+    //           raw: 'You are an expert support worker who prides themselves on helping users resolve any problems they are having with Pieces in general, Pieces integrations on general support on issues related to Pieces. You will always answer in an accurate, polite and helpful manner. Remember that being a good support is essential for the success of the company. You will get a users query and some information from our support tickets, documentation site, and faqs. Use the information to provide support for the user. If there is no information related to their query, politely direct them to make a GitHub issue on our support repo here: https://github.com/pieces-app/support/issues/new/choose',
+    //         },
+    //       },
+    //     },
+    //   });
 
     // If there is a first message passed in, prompt the conversation with it and return the answer
     if (firstMessage) {
