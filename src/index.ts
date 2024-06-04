@@ -1,15 +1,16 @@
-import {Client, Events, GatewayIntentBits, Partials} from "discord.js";
+import {Client, DMChannel, Events, GatewayIntentBits, Partials} from "discord.js";
 import {baseLog} from "./utils/log.js";
 import {env} from "./utils/env.js";
-import {reply} from "./actions/reply.js";
+import {privateReply, publicReply} from "./actions/reply.js";
 import {getIssues} from "./utils/ingestion/github.js";
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers, // Optional, for member-related events
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent, // Required for receiving message content
-    GatewayIntentBits.GuildMembers, // Optional, for member-related events
+    GatewayIntentBits.DirectMessages,
   ],
   partials: [
     Partials.Message, // Needed to receive events for uncached messages
@@ -56,8 +57,21 @@ client.on(Events.MessageCreate, async (message) => {
   try {
     baseLog("Created a new message in channel/thread %s", message.channelId);
 
-    // Handle the message
-    await reply(message);
+    if (message.author === client.user) {
+      baseLog("Ignoring message from self");
+      return;
+    }
+
+    // @ts-ignore
+    if (message.channel instanceof DMChannel) {
+      baseLog("Received a DM from %s", message.author.username);
+
+      await privateReply(message)
+    } else if (message.mentions.has(message.client.user.id)) {
+      baseLog("Bot was mentioned in message %s", message.id);
+
+      await publicReply(message);
+    }
   } catch (err) {
     console.error("Failed to create message:", err);
   }
@@ -176,4 +190,14 @@ client.on(Events.GuildRoleDelete, async (role) => {
   }
 });
 
-client.login(env.DISCORD_BOT_TOKEN);
+client.on(Events.InteractionCreate, async (interaction) => {
+  try {
+    baseLog("Created a new interaction (%s)", interaction.id);
+
+    // console.log(interaction);
+  } catch (err) {
+    console.error("Failed to create interaction:", err);
+  }
+})
+
+await client.login(env.DISCORD_BOT_TOKEN);

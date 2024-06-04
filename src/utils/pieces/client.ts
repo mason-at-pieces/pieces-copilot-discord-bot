@@ -19,6 +19,9 @@ import {
   UserApi,
 } from '@pieces.app/pieces-os-client';
 import {env} from "../env.js";
+import type {
+  ConversationMessageSentimentEnum
+} from "@pieces.app/pieces-os-client/dist/models/ConversationMessageSentimentEnum";
 
 // const defaultProfilePicture = 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'
 
@@ -45,6 +48,7 @@ const trackedApplication: Application = {
 };
 
 export const assetsApi = new AssetsApi(piecesConfig);
+export const conversationMessageApi = new ConversationMessageApi(piecesConfig);
 export const conversationMessagesApi = new ConversationMessagesApi(
   piecesConfig
 );
@@ -365,3 +369,26 @@ export const searchSavedMaterials = async ({
     return [];
   }
 };
+
+export const addSentimentToMessage = async ({
+  messageId,
+  sentiment
+}: {
+  messageId: string;
+  sentiment: ConversationMessageSentimentEnum
+}): Promise<void> => {
+  try {
+    const conversationMessage = await conversationMessageApi.messageSpecificMessageSnapshot({
+      message: messageId
+    });
+
+    await conversationMessageApi.messageSpecificMessageUpdate({
+      conversationMessage: {
+        ...conversationMessage,
+        sentiment
+      }
+    });
+  } catch (error) {
+    console.error(`Error adding ${sentiment} sentiment to message ${messageId}`, error);
+  }
+}
