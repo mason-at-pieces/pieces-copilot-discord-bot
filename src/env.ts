@@ -13,7 +13,7 @@ export const env = createEnv({
 
     // Discord
     DISCORD_BOT_TOKEN: z.string(),
-    NEXT_PUBLIC_DISCORD_CLIENT_ID: z.string(),
+    DISCORD_CLIENT_ID: z.string(),
 
     // Pieces OS
     PIECES_CLIENT_BASE_URL: z.string(),
