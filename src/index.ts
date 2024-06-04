@@ -3,6 +3,10 @@ import {baseLog} from "./utils/log.js";
 import {env} from "./utils/env.js";
 import {privateReply, publicReply} from "./actions/reply.js";
 import {getIssues} from "./utils/ingestion/github.js";
+import {addSentimentToMessage, conversationMessageApi} from "./utils/pieces/client.js";
+import type {
+  ConversationMessageSentimentEnum
+} from "@pieces.app/pieces-os-client/dist/models/ConversationMessageSentimentEnum";
 
 const client = new Client({
   intents: [
@@ -194,7 +198,41 @@ client.on(Events.InteractionCreate, async (interaction) => {
   try {
     baseLog("Created a new interaction (%s)", interaction.id);
 
-    // console.log(interaction);
+    // Check if the interaction is a button click
+    if (interaction.isButton()) {
+      // Acknowledges the interaction
+      await interaction.deferUpdate();
+
+      // Split custom_id into message ID and sentiment by splitting on the colon
+      const [messageId, sentiment] = interaction.customId.split(':');
+      const cleanedSentiment = sentiment.toUpperCase() as ConversationMessageSentimentEnum
+
+      await addSentimentToMessage({
+        messageId,
+        sentiment: cleanedSentiment
+      })
+
+      // Update the message with the new sentiment
+      await interaction.editReply({
+        components: [{
+          type: 1,
+          components: [
+            {
+              type: 2,
+              style: 1,
+              custom_id: `${messageId}:like`,
+              label: cleanedSentiment === 'LIKE' ? '✅' : '👍',
+            },
+            {
+              type: 2,
+              style: 4,
+              custom_id: `${messageId}:dislike`,
+              label: cleanedSentiment === 'DISLIKE' ? '✅' : '👎',
+            },
+          ],
+        }]
+      })
+    }
   } catch (err) {
     console.error("Failed to create interaction:", err);
   }

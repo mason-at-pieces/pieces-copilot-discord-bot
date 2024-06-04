@@ -78,7 +78,10 @@ export const createConversation = async (
   } = {}
 ): Promise<{
   conversation: Conversation;
-  answer?: string;
+  answer?: {
+    id?: string
+    text: string
+  }
 } | null> => {
   const { name, firstMessage } = props;
 
@@ -121,7 +124,7 @@ export const createConversation = async (
 
       return {
         conversation: newConversation,
-        answer,
+        answer
       };
     }
 
@@ -219,7 +222,11 @@ export const promptConversation = async ({
 }: {
   message: string;
   conversationId: string;
-}): Promise<string> => {
+}): Promise<{
+  id?: string;
+  text: string;
+}
+> => {
   try {
     const conversation = await getConversation({
       conversationId,
@@ -227,7 +234,9 @@ export const promptConversation = async ({
     });
 
     if (!conversation) {
-      return 'Conversation not found';
+      return {
+        text: 'Conversation not found'
+      }
     }
 
     // Add the user message to the conversation
@@ -298,11 +307,16 @@ export const promptConversation = async ({
 
     await updateConversationName(conversationId);
 
-    return answer.answers.iterable[0].text;
+    return {
+      id: botMessage.id,
+      text: answer.answers.iterable[0].text,
+    }
   } catch (error) {
     console.error('Error prompting conversation', error);
 
-    return 'Error asking question';
+    return {
+      text: 'Error asking question'
+    }
   }
 };
 

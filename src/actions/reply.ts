@@ -1,19 +1,25 @@
-import {AnyThreadChannel, Channel, Message, APIEmbed} from "discord.js";
+import {AnyThreadChannel, Message, APIEmbed} from "discord.js";
 import {baseLog} from "../utils/log.js";
 import {createConversation, promptConversation} from "../utils/pieces/client.js";
-import * as repl from "node:repl";
+import type {
+  ConversationMessageSentimentEnum
+} from "@pieces.app/pieces-os-client/dist/models/ConversationMessageSentimentEnum";
 
 const messageRatingEmbed: APIEmbed = {
   color: 0x0099ff,
   description: 'Was this response helpful? Please let us know by reacting below.',
 };
 
-const generateReplyEmbed = ({
+export const generateReplyEmbed = ({
   answer,
-  conversationId
+  conversationId,
+  messageId,
+  updatedSentiment
 }: {
   answer: string;
+  messageId: string;
   conversationId?: string;
+  updatedSentiment?: ConversationMessageSentimentEnum;
 }) => {
   const followUpNote = '**Note:** You can ask a follow up question by replying to this message or @ mentioning me again :speech_balloon:'
   let replyMessage = ''
@@ -34,14 +40,14 @@ const generateReplyEmbed = ({
           {
             type: 2,
             style: 1,
-            custom_id: 'yes',
-            label: '👍',
+            custom_id: `${messageId}:like`,
+            label: updatedSentiment === 'LIKE' ? '✅' : '👍',
           },
           {
             type: 2,
             style: 4,
-            custom_id: 'no',
-            label: '👎',
+            custom_id: `${messageId}:dislike`,
+            label: updatedSentiment === 'DISLIKE' ? '✅' : '👎',
           },
         ],
       },
@@ -61,7 +67,8 @@ export const privateReply = async (message: Message) => {
 
   // Reply to the direct message
   const replyMessageEmbed = generateReplyEmbed({
-    answer: newConversation.answer,
+    answer: newConversation.answer.text,
+    messageId: newConversation.answer.id
   })
   await message.reply(replyMessageEmbed)
 
@@ -93,7 +100,8 @@ export const publicReply = async (message: Message) => {
 
       // Create a thread on the message and reply inside the thread
       const replyMessageEmbed = generateReplyEmbed({
-        answer: newConversation.answer,
+        answer: newConversation.answer.text,
+        messageId: newConversation.answer.id,
         conversationId: newConversation.conversation.id
       })
       await message.reply(replyMessageEmbed)
@@ -107,7 +115,8 @@ export const publicReply = async (message: Message) => {
         message: message.content
       })
       const replyMessageEmbed = generateReplyEmbed({
-        answer
+        answer: answer.text,
+        messageId: answer.id
       })
       await channel.send(replyMessageEmbed)
 
@@ -131,7 +140,8 @@ export const publicReply = async (message: Message) => {
       autoArchiveDuration: 60, // 1 hour
     });
     const replyMessageEmbed = generateReplyEmbed({
-      answer: newConversation.answer,
+      answer: newConversation.answer.text,
+      messageId: newConversation.answer.id,
       conversationId: newConversation.conversation.id
     })
     await thread.send(replyMessageEmbed)
