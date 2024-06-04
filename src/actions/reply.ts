@@ -27,10 +27,7 @@ export const reply = async (message: Message) => {
         })
 
         // Create a thread on the message and reply inside the thread
-        await message.reply(`
-Conversation ID: ${newConversation.conversation.id}
-
-${newConversation.answer}`)
+        await message.reply(`Conversation ID: ${newConversation.conversation.id}\n\n${newConversation.answer}`)
 
         baseLog("Created a new thread with conversation ID %s", newConversation.conversation.id);
       } else {
@@ -62,10 +59,7 @@ ${newConversation.answer}`)
         autoArchiveDuration: 60, // 1 hour
       });
 
-      await thread.send(`
-Conversation ID: ${newConversation.conversation.id}
-
-${newConversation.answer}`)
+      await thread.send(`Conversation ID: ${newConversation.conversation.id}\n\n${newConversation.answer}`)
 
       // await thread.setName(newConversation.conversation.name)
 
