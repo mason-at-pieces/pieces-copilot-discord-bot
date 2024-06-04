@@ -1,6 +1,6 @@
 import {AnyThreadChannel, Channel, Message} from "discord.js";
-import {baseLog} from "../log.js";
-import {createConversation, promptConversation} from "../pieces/client.js";
+import {baseLog} from "../utils/log.js";
+import {createConversation, promptConversation} from "../utils/pieces/client.js";
 
 export const reply = async (message: Message) => {
   // Check if the bot is mentioned in the message

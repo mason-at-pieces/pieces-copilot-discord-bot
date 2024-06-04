@@ -1,8 +1,8 @@
 import {Client, Events, GatewayIntentBits, Partials} from "discord.js";
-import {baseLog} from "./log.js";
-import {env} from "./env.js";
+import {baseLog} from "./utils/log.js";
+import {env} from "./utils/env.js";
 import {reply} from "./actions/reply.js";
-import {getIssues} from "./ingestion/github.js";
+import {getIssues} from "./utils/ingestion/github.js";
 
 const client = new Client({
   intents: [
