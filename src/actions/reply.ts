@@ -1,6 +1,6 @@
 import {AnyThreadChannel, Message, APIEmbed} from "discord.js";
 import {baseLog} from "../utils/log.js";
-import {createConversation, promptConversation} from "../utils/pieces/client.js";
+import {createConversation, piecesClient, promptConversation} from "../utils/pieces/client.js";
 import type {
   ConversationMessageSentimentEnum
 } from "@pieces.app/pieces-os-client/dist/models/ConversationMessageSentimentEnum";
@@ -60,7 +60,7 @@ export const privateReply = async (message: Message) => {
 
   await message.channel.sendTyping();
 
-  const newConversation = await createConversation({
+  const newConversation = await piecesClient.createConversation({
     name: 'QA Bot DM',
     firstMessage: message.content
   })
@@ -68,7 +68,7 @@ export const privateReply = async (message: Message) => {
   // Reply to the direct message
   const replyMessageEmbed = generateReplyEmbed({
     answer: newConversation.answer.text,
-    messageId: newConversation.answer.id
+    messageId: newConversation.answer.botMessageId,
   })
   await message.reply(replyMessageEmbed)
 
